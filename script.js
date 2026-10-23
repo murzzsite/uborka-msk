@@ -89,6 +89,7 @@ const LEAD_ENDPOINT = 'https://lead-relay.leestygpt.workers.dev/lead/3JNUR3Q9JD'
   const commentEl = $('#f-comment');
   let autoComment = '';
   let summary = '';
+  let winUser = false;
 
   const row = (what, val) => {
     const r = document.createElement('div');
@@ -104,7 +105,7 @@ const LEAD_ENDPOINT = 'https://lead-relay.leestygpt.workers.dev/lead/3JNUR3Q9JD'
     const kind = $('input[name="kind"]:checked').value;
     const rooms = $('input[name="rooms"]:checked').value;
     // после ремонта окна входят в уборку
-    if (kind === 'rep') { winBox.checked = true; winBox.disabled = true; } else { winBox.disabled = false; }
+    if (kind === 'rep') { winBox.checked = true; winBox.disabled = true; } else { winBox.disabled = false; winBox.checked = winUser; }
 
     const base = PRICES[kind][rooms];
     let total = base;
@@ -126,7 +127,8 @@ const LEAD_ENDPOINT = 'https://lead-relay.leestygpt.workers.dev/lead/3JNUR3Q9JD'
     orderSum.textContent = fmt(total);
     summary = KIND[kind] + ', ' + ROOMS[rooms] + (names.length ? ', ' + names.join(', ') : '') + '. Ориентир по калькулятору: ' + fmt(total).replace(/ /g, ' ');
   };
-  $$('input[name="kind"], input[name="rooms"], #extras input').forEach(i => i.addEventListener('change', render));
+  winBox.addEventListener('change', () => { if (!winBox.disabled) winUser = winBox.checked; });
+  $('input[name="kind"], input[name="rooms"], #extras input').forEach(i => i.addEventListener('change', render));
   render();
 
   const prefill = () => {
