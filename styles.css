@@ -21,7 +21,7 @@
   --s-body: clamp(1rem, 0.95rem + 0.22vw, 1.125rem);
   --s-lead: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
   --s-head: clamp(2rem, 1.1rem + 3.1vw, 3.75rem);
-  --s-huge: clamp(2.5rem, 8.1vw, 9.5rem);
+  --s-huge: clamp(2.25rem, 7vw, 9rem);
 
   --margin: clamp(16px, 2.2vw, 32px);
   --gap-section: clamp(88px, 11vw, 168px);
@@ -106,17 +106,17 @@ ul, ol { padding: 0; list-style: none; }
 
 /* ===== Первый экран: карточка-лист рядом с комнатой ===== */
 .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 12px 12px; align-items: start; }
-.hero__card { background: var(--paper); display: flex; flex-direction: column; min-height: calc(100svh - 80px); }
+.hero__card { background: var(--paper); display: flex; flex-direction: column; min-height: calc(100vh - 80px); min-height: calc(100svh - 80px); }
 .hero__body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 56px clamp(24px, 4vw, 72px) 40px; gap: 24px; }
 
 .hero h1 { font-size: var(--s-head); }
 .hero__lead { max-width: 36ch; font-size: var(--s-body); }
 .hero__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; padding: 0 24px 28px; font-size: var(--s-small); font-weight: 600; }
 .hero__links a { padding: 10px 0; }
-.hero__room { position: sticky; top: 80px; height: calc(100svh - 92px); background: var(--field); overflow: hidden; }
-.hero__room img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.6s ease; }
+.hero__room { position: sticky; top: 80px; height: calc(100vh - 92px); height: calc(100svh - 92px); min-height: 360px; background: var(--field); overflow: hidden; margin: 0; }
+.hero__room img { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 1.6s ease; }
 .hero__room img.is-on { opacity: 1; }
-.hero__room figcaption { position: absolute; left: 0; bottom: 0; background: var(--paper); padding: 8px 14px; font-size: var(--s-small); max-width: 80%; }
+.hero__fine { max-width: 36ch; }
 
 /* ===== Разделы ===== */
 .section { padding-block: var(--gap-section); }
@@ -141,7 +141,7 @@ ul, ol { padding: 0; list-style: none; }
 .how__text h2 { font-size: var(--s-head); margin-bottom: 24px; }
 .how__text p { max-width: 30ch; }
 .slip { background: var(--paper); padding: 32px 32px 56px; clip-path: var(--zig); }
-.how .slip { grid-column: 8 / 13; width: 100%; max-width: 520px; justify-self: end; }
+.how .slip { grid-column: 7 / 13; width: 100%; max-width: 560px; justify-self: end; }
 .slip__title { text-align: center; font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: var(--s-lead); margin-bottom: 8px; }
 .slip__group { margin-top: 28px; font-weight: 600; }
 .row { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; }
@@ -161,7 +161,7 @@ legend { padding: 0; margin-bottom: 12px; font-family: var(--display); font-weig
 .opts--kinds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .opts--rooms { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .opt { position: relative; }
-.opt input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.opt input[type="radio"], .opt input[type="checkbox"] { position: absolute; opacity: 0; top: 0; left: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
 .opt label { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-height: 64px; padding: 12px 16px; background: var(--paper); cursor: pointer; transition: background-color 0.2s var(--ease), transform 0.2s var(--ease); }
 .opt label span { font-size: var(--s-small); color: var(--muted); }
 .opt label b { font-weight: 600; }
@@ -226,15 +226,14 @@ details[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
 details p { margin-top: 10px; color: var(--muted); max-width: 52ch; }
 .faq__actions { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; margin-top: 12px; }
 .faq__photos { grid-column: 7 / 13; position: relative; padding-bottom: 80px; }
-.faq__tall { aspect-ratio: 3 / 4; width: 100%; max-height: 900px; object-fit: cover; }
-.faq__sq { position: absolute; left: -40px; bottom: 40px; width: 33%; aspect-ratio: 1; object-fit: cover; border: 12px solid var(--ground); }
+.faq__tall { width: 100%; height: auto; display: block; }
 
-/* контакты: визитная карточка на фотографии */
-.contact { position: relative; min-height: 100svh; background: var(--ink); }
-.contact > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.contact__card { position: sticky; top: 90px; margin: 0 0 0 auto; width: min(420px, calc(100% - 32px)); background: var(--paper); padding: 32px; z-index: 2; }
-.contact__wrap { position: relative; min-height: 100svh; padding-block: 60px 90px; display: flex; flex-direction: column; }
-.contact__card h2 { font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: var(--s-lead); margin-bottom: 20px; }
+/* контакты */
+.contact__grid { align-items: start; row-gap: 40px; }
+.contact__text { grid-column: 1 / 7; }
+.contact__text h2 { font-size: var(--s-head); margin-bottom: 20px; }
+.contact__text > p { max-width: 46ch; margin-bottom: 32px; }
+.contact__card { grid-column: 8 / 13; background: var(--paper); padding: 32px; }
 .field { display: grid; gap: 6px; margin-bottom: 16px; }
 .field label { font-size: var(--s-small); font-weight: 600; }
 .field input, .field textarea { width: 100%; padding: 12px 14px; min-height: 52px; background: var(--ground); border: 0; border-radius: 0; }
@@ -242,7 +241,7 @@ details p { margin-top: 10px; color: var(--muted); max-width: 52ch; }
 .field input:focus, .field textarea:focus { outline: 3px solid var(--accent); outline-offset: 0; }
 .hp { position: absolute; left: -9999px; width: 2px; height: 2px; opacity: 0; }
 .form__note { margin-top: 12px; font-size: var(--s-small); color: var(--muted); }
-.contact__links { margin-top: 24px; display: grid; gap: 4px; font-size: var(--s-small); }
+.contact__links { display: grid; gap: 8px; max-width: 420px; }
 .contact__links li { display: flex; justify-content: space-between; gap: 12px; }
 .contact__links span { color: var(--muted); }
 
@@ -279,7 +278,7 @@ details p { margin-top: 10px; color: var(--muted); max-width: 52ch; }
 }
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; padding-inline: 12px; }
-  .hero__room { order: -1; position: relative; top: 0; height: 48svh; min-height: 300px; }
+  .hero__room { order: -1; position: relative; top: 0; height: 52vw; height: 52svh; min-height: 300px; max-height: 520px; }
   .hero__card { min-height: 0; margin-top: -24px; position: relative; z-index: 2; }
   .stripe { height: 40px; }
   .hero__body { padding: 40px 20px 28px; }
@@ -292,13 +291,8 @@ details p { margin-top: 10px; color: var(--muted); max-width: 52ch; }
   .proof__card { width: 92%; padding: 28px; }
   .faq { padding: 0; }
   .faq__photos { order: -1; padding-bottom: 0; }
-  .faq__tall { aspect-ratio: 4 / 5; }
-  .faq__sq { width: 38%; left: auto; right: var(--margin); bottom: -32px; }
   .faq__text { padding-top: 72px; padding-bottom: 88px; }
-  .contact__card { position: static; margin-inline: auto; }
-  .contact { min-height: 0; background: var(--ground); }
-  .contact > img { height: 60svh; }
-  .contact__wrap { min-height: 0; padding-block: calc(60svh - 80px) 40px; }
+  .contact__text, .contact__card { grid-column: 1 / -1; }
   .opts--kinds { grid-template-columns: 1fr; }
   .opts--rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .opts--extras { grid-template-columns: 1fr; }
@@ -328,3 +322,46 @@ details p { margin-top: 10px; color: var(--muted); max-width: 52ch; }
   thead th:not(:first-child), td:not(:first-child) { width: 20%; }
   .no { font-size: var(--s-small); }
 }
+
+/* цены: три листа */
+.kinds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: clamp(40px, 5vw, 72px); align-items: stretch; }
+.kind { padding-bottom: 48px; background: var(--paper); }
+.kind .slip__title { text-align: left; margin-bottom: 4px; }
+.kind__from { font-family: var(--display); font-weight: 800; font-size: var(--s-head); line-height: 1; letter-spacing: -0.01em; margin: 8px 0 12px; }
+.kind__for { color: var(--muted); margin-bottom: 8px; min-height: 3.2em; }
+.kind .row__what { max-width: 58%; }
+.kind .slip__group { margin-top: 24px; }
+.inc { margin-top: 12px; display: grid; gap: 8px; }
+.inc li { position: relative; padding-left: 28px; }
+.inc li::before { content: ''; position: absolute; left: 0; top: 0.45em; width: 14px; height: 14px; background: var(--accent); }
+.kinds__note { margin-top: 32px; max-width: 72ch; }
+.extras-slip { padding-bottom: 48px; }
+.extras-slip .row__what { max-width: 60%; }
+
+/* калькулятор: количество */
+.opt--qty { display: grid; grid-template-columns: 1fr 76px; gap: 8px; }
+.qty { position: relative; z-index: 1; width: 100%; min-height: 64px; padding: 0 10px; background: var(--paper); border: 0; text-align: center; font-size: var(--s-body); }
+.qty:disabled { background: var(--field); color: var(--muted); }
+.opt--qty input[type="checkbox"] { width: calc(100% - 84px); }
+
+/* галерея */
+.gallery { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; margin-top: clamp(40px, 5vw, 72px); }
+.g { margin: 0; }
+.g img { width: 100%; height: auto; display: block; background: var(--field); }
+.g figcaption { padding-top: 10px; }
+.g--4 { grid-column: span 4; }
+.g--6 { grid-column: span 6; }
+
+@media (max-width: 900px) {
+  .kinds { grid-template-columns: 1fr; }
+  .kind__for { min-height: 0; }
+  .g--4, .g--6 { grid-column: span 6; }
+}
+@media (max-width: 560px) {
+  .g--4, .g--6 { grid-column: 1 / -1; }
+  .gallery { gap: 20px; }
+}
+
+.h1__main { display: block; }
+.h1__sub { display: block; margin-top: 16px; font-family: var(--text); font-weight: 600; text-transform: none; letter-spacing: 0; line-height: 1.25; font-size: var(--s-lead); }
+@media (max-width: 900px) { .hero__room { height: 40vw; height: 40svh; min-height: 240px; } }

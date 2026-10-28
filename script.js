@@ -73,23 +73,24 @@ const LEAD_ENDPOINT = 'https://lead-relay.leestygpt.workers.dev/lead/3JNUR3Q9JD'
 
   // ===== Квитанция =====
   const PRICES = {
-    sup: { 0: 3500, 1: 3500, 2: 4800, 3: 6000 },
-    gen: { 0: 5500, 1: 5500, 2: 7800, 3: 10000 },
-    rep: { 0: 7500, 1: 7500, 2: 10500, 3: 13500 },
+    sup: { 1: 3000, 2: 4000, 3: 5000, 4: 6500 },
+    gen: { 1: 6000, 2: 7500, 3: 9500, 4: 12000 },
   };
+  const REP_RATE = 150;
   const KIND = { sup: 'Поддерживающая уборка', gen: 'Генеральная уборка', rep: 'Уборка после ремонта' };
-  const ROOMS = { 0: 'студия', 1: '1 комната', 2: '2 комнаты', 3: '3 комнаты' };
-  const fmt = n => n.toLocaleString('ru-RU').replace(/\s/g, ' ') + ' ₽';
+  const ROOMS = { 1: 'студия или 1 комната, до 40 м²', 2: '2 комнаты, до 60 м²', 3: '3 комнаты, до 80 м²', 4: '4 комнаты, до 100 м²' };
+  const fmt = n => n.toLocaleString('ru-RU').replace(/s/g, ' ') + ' ₽';
 
   const rowsEl = $('#rows');
   const totalEl = $('#total');
   const orderSum = $('#order-sum');
-  const winBox = $('#x-win');
-  const extras = $$('#extras input');
+  const roomsBox = $('#rooms-box');
+  const areaBox = $('#area-box');
+  const areaEl = $('#area');
+  const extras = $$('#extras-opts input[type="checkbox"]');
   const commentEl = $('#f-comment');
   let autoComment = '';
   let summary = '';
-  let winUser = false;
 
   const row = (what, val) => {
     const r = document.createElement('div');
@@ -101,34 +102,51 @@ const LEAD_ENDPOINT = 'https://lead-relay.leestygpt.workers.dev/lead/3JNUR3Q9JD'
     return r;
   };
 
+  const getArea = () => {
+    const n = Math.round(Number(areaEl.value));
+    return Number.isFinite(n) && n > 0 ? Math.min(500, n) : 40;
+  };
+
   const render = () => {
     const kind = $('input[name="kind"]:checked').value;
     const rooms = $('input[name="rooms"]:checked').value;
-    // после ремонта окна входят в уборку
-    if (kind === 'rep') { winBox.checked = true; winBox.disabled = true; } else { winBox.disabled = false; winBox.checked = winUser; }
+    const isRep = kind === 'rep';
+    roomsBox.hidden = isRep;
+    areaBox.hidden = !isRep;
 
-    const base = PRICES[kind][rooms];
+    let base, label;
+    if (isRep) {
+      const area = getArea();
+      base = area * REP_RATE;
+      label = KIND.rep + ', ' + area + ' м² × ' + REP_RATE + ' ₽';
+    } else {
+      base = PRICES[kind][rooms];
+      label = KIND[kind] + ', ' + ROOMS[rooms];
+    }
     let total = base;
-    const lines = [row(KIND[kind] + ', ' + ROOMS[rooms], fmt(base))];
+    const lines = [row(label, 'от ' + fmt(base))];
     const names = [];
     extras.forEach(x => {
+      const qtyEl = x.closest('.opt').querySelector('.qty');
+      if (qtyEl) qtyEl.disabled = !x.checked;
       if (!x.checked) return;
-      if (x === winBox && kind === 'rep') {
-        lines.push(row(x.dataset.name, 'входит'));
-        return;
-      }
-      const p = Number(x.dataset.price);
+      let n = 1;
+      if (qtyEl) n = Math.max(1, Math.min(Number(qtyEl.max) || 99, Math.round(Number(qtyEl.value)) || 1));
+      const p = Number(x.dataset.price) * n;
       total += p;
-      lines.push(row(x.dataset.name, '+' + fmt(p)));
-      names.push(x.dataset.name.toLowerCase());
+      const nm = x.dataset.name + (x.dataset.unit ? ', ' + n + (x.dataset.unit === 'час' ? ' ч' : ' ств.') : '');
+      lines.push(row(nm, 'от ' + fmt(p)));
+      names.push(nm.toLowerCase());
     });
     rowsEl.replaceChildren(...lines);
-    totalEl.textContent = fmt(total);
+    totalEl.textContent = 'от ' + fmt(total);
     orderSum.textContent = fmt(total);
-    summary = KIND[kind] + ', ' + ROOMS[rooms] + (names.length ? ', ' + names.join(', ') : '') + '. Ориентир по калькулятору: ' + fmt(total).replace(/ /g, ' ');
+    summary = label + (names.length ? ', ' + names.join(', ') : '') + '. Стартовая цена по калькулятору: от ' + fmt(total).replace(/ /g, ' ');
   };
-  winBox.addEventListener('change', () => { if (!winBox.disabled) winUser = winBox.checked; });
-  $('input[name="kind"], input[name="rooms"], #extras input').forEach(i => i.addEventListener('change', render));
+  $$('input[name="kind"], input[name="rooms"], #extras-opts input, #area').forEach(i => {
+    i.addEventListener('change', render);
+    i.addEventListener('input', render);
+  });
   render();
 
   const prefill = () => {
